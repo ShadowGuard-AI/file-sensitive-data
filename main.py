@@ -2,6 +2,7 @@ import re
 import logging
 from pathlib import Path
 import argparse
+import sys
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -60,7 +61,7 @@ def main():
 
     if not target_path.exists():
         logging.error("The specified path does not exist.")
-        return
+        sys.exit(1)
 
     if target_path.is_file():
         matches = scan_file(target_path, patterns)
@@ -77,6 +78,7 @@ def main():
                     logging.info(f"Sensitive data found in {file}: {matches}")
     else:
         logging.error("Invalid option. Use --recursive to scan directories.")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
