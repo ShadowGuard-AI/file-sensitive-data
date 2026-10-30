@@ -1,3 +1,5 @@
+![Banner](banner.png)
+
 # file-sensitive-data
 
 A command line scanner that searches a file, or a directory tree, for text patterns that look like sensitive data. By default it looks for US social security numbers in `NNN-NN-NNNN` form and Visa style card numbers starting with 4 (13 or 16 digits). Results are reported through the logging output; there is no separate report file.
