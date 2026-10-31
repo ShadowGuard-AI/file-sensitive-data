@@ -65,3 +65,9 @@ INFO - No sensitive data found in file.txt.
 ## License
 
 GNU General Public License v3.0. See the `LICENSE` file.
+
+## Diagrams and maps
+
+I drew the system out in [file-sensitive-data-Visuals](file-sensitive-data-Visuals/): an architecture diagram, a data-flow diagram, a flowchart of a run, and a product map, with the written product map, statistics with citations, and the roadmap in [VISUAL.md](file-sensitive-data-Visuals/VISUAL.md). Every sheet also ships as a PNG photograph of the paper page beside its SVG.
+
+![file-sensitive-data architecture](file-sensitive-data-Visuals/architecture.svg)
