@@ -31,6 +31,16 @@ python3 main.py [-h] [--patterns PATTERN [PATTERN ...]] [--recursive] filepath
 
 A path that does not exist also exits with status 1.
 
+Exit status contract:
+
+- 0: a clean scan of real content, with no matches found
+- 2: one or more matches were found
+- 1: an error (a missing path, a directory without `--recursive`, a scan error, or an invalid pattern, which is caught before any scanning starts), or nothing was scanned (zero files, or zero bytes of content)
+
+Every run ends with a summary line giving the files scanned, the matches found, and the bytes read, in both single file and recursive modes.
+
+Matched values are never printed. A finding is reported by pattern kind, file, and count only, with the value replaced by a fixed `[REDACTED]` marker.
+
 ## Examples
 
 ```bash
@@ -44,16 +54,18 @@ python3 main.py directory/ --recursive
 python3 main.py file.txt --patterns 'clean'
 ```
 
-For a file containing `SSN 123-45-6789 and card 4111111111111111`, the output includes:
+For a file containing an SSN shaped value and a card shaped value, the output includes:
 
 ```
-INFO - Sensitive data found in file.txt: ['123-45-6789', '4111111111111111']
+INFO - Sensitive data found in file.txt: SSN pattern: 1 match [REDACTED]; credit card pattern: 1 match [REDACTED]
+INFO - Scan summary: files scanned: 1, matches found: 2, bytes read: ...
 ```
 
 For a file with no matches:
 
 ```
 INFO - No sensitive data found in file.txt.
+INFO - Scan summary: files scanned: 1, matches found: 0, bytes read: ...
 ```
 
 ## Limitations
