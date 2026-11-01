@@ -11,6 +11,10 @@ REDACTED = "[REDACTED]"
 
 DEFAULT_PATTERN_KINDS = {
     r"\b\d{3}-\d{2}-\d{4}\b": "SSN pattern",
+    # The card pattern only covers numbers starting with 4, at 13 or 16
+    # digits, and there is no Luhn check. Other issuers are invisible to
+    # the defaults, and any 4-led digit run of the right length counts,
+    # valid card or not.
     r"\b4[0-9]{12}(?:[0-9]{3})?\b": "credit card pattern",
 }
 
@@ -67,12 +71,21 @@ def scan_file(file_path, compiled_patterns):
     are counted only and are never returned or logged.
     """
     try:
+        # Undecodable bytes are dropped, not treated as an error, so binary
+        # files scan as whatever text survives decoding. A sensitive value with
+        # a bad byte inside it can be split by that drop and missed. The byte
+        # count in the result is the file's size on disk, not the number of
+        # characters that were actually searched.
         with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
             logging.info(f"Scanning file: {file_path}")
             content = file.read()
         counts = {}
         total = 0
         for kind, compiled in compiled_patterns:
+            # findall counts non-overlapping matches, and the matched values are
+            # counted and discarded in this same expression's result. Nothing
+            # downstream ever sees a value, which is the point of this tool: the
+            # report carries kinds and counts only.
             found = compiled.findall(content)
             if found:
                 counts[kind] = counts.get(kind, 0) + len(found)
@@ -129,6 +142,10 @@ def main():
                 logging.info(f"No sensitive data found in {target_path}.")
     elif target_path.is_dir() and args.recursive:
         logging.info(f"Scanning directory: {target_path} recursively.")
+        # rglob reaches hidden files and binary files alike, and follows the
+        # directory as it exists at scan time. A file created mid-scan by
+        # another process may or may not appear, and a file that vanishes
+        # between listing and reading lands in the error count.
         for file in target_path.rglob("*"):
             if file.is_file():
                 result = scan_file(file, compiled_patterns)
@@ -157,6 +174,9 @@ def main():
         print("Nothing was scanned: no file content was scanned.")
         sys.exit(1)
 
+    # Exit 2 is a finding, not a failure: the scan worked and found
+    # something. Exit 1 is reserved for errors and for scans that read
+    # nothing, and exit 0 means real content was scanned and was clean.
     if matches_found:
         sys.exit(2)
 
