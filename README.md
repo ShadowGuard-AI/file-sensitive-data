@@ -14,7 +14,7 @@ A command line scanner that searches a file, or a directory tree, for text patte
 There is no package to install. Clone the repository and run `main.py` directly:
 
 ```bash
-git clone https://github.com/ShadowGuardAI/file-sensitive-data.git
+git clone https://github.com/ShadowGuard-AI/file-sensitive-data.git
 cd file-sensitive-data
 ```
 
